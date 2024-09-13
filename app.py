@@ -194,7 +194,7 @@ def format_annotation(text):
 
         if file_citation := getattr(annotation, "file_citation", None):
             cited_file = client.files.retrieve(file_citation.file_id)
-            if file_citation.quote:
+            if hasattr(file_citation, 'quote'):
                 citations.append(
                     f"[{index}] {file_citation.quote} from {cited_file.filename}"
                 )
