@@ -3,7 +3,8 @@ import base64
 import re
 import json
 import csv
-from pathlib import Path
+import pathlib
+#from pathlib import Path
 import streamlit as st
 import openai
 from openai import AssistantEventHandler
@@ -11,8 +12,18 @@ from tools import TOOL_MAP
 from typing_extensions import override
 from dotenv import load_dotenv
 import streamlit_authenticator as stauth
+import sys
+#import path
 
 load_dotenv()
+
+p = pathlib.Path(__file__)
+#dir = p.absolute()
+#dir = path.Path(__file__)
+dir = p.resolve()
+#dir = os.path.abspath(__file__)
+print(dir)
+sys.path.append(dir.parent.parent)
 
 assistant_icon = "🤖" 
 user_icon = "🧑‍🔬"      # st.image('A2logo_neg_small.png')
@@ -290,7 +301,7 @@ def reset_chat():
 @st.cache_data
 def map_file_to_source(thefile):
     mapfilename = st.session_state.mapfile_name
-    if Path(mapfilename).exists():
+    if pathlib.Path(mapfilename).exists():
         print("Reading the sourcemap file " + mapfilename)
         with open(mapfilename, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -298,6 +309,8 @@ def map_file_to_source(thefile):
                 thisfilename = os.path.basename(row['Filename'])
                 if thisfilename == thefile:
                     return row['URL']
+    else:
+        print(f"Unable to load {mapfilename}!")
     return thefile #Not found
 
 def load_chat_screen(assistant_id, assistant_title):
