@@ -232,7 +232,7 @@ def format_annotation(text):
             citations.append(
                     f"{citation_map[filename]}: [{pretty_filename}]({map_file_to_source(filename)})"
             )
-    text_value += "\n\n" + "\n".join(citations)
+    text_value += "\n\n" + "<br>".join(citations)
     return text_value
 
 
@@ -394,7 +394,7 @@ def main():
             on_change=reset_chat,  # Call the reset function on change
         )
         if selected_assistant:
-            st.session_state['mapfile_name'] = assistants_object[selected_assistant]["id"] + "_sourcemap.csv"
+            st.session_state['mapfile_name'] = "/mount/src/gpt-testbed-api-ui/" + assistants_object[selected_assistant]["id"] + "_sourcemap.csv"
             st.markdown(st.session_state.mapfile_name)
             st.markdown(dir.parent)
             st.cache_data.clear()
