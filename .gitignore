@@ -8,4 +8,3 @@ __pycache__
 .streamlit/secrets.toml
 .devcontainer
 poetry.lock
-*_sourcemap.csv
