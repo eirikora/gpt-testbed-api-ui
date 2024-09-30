@@ -295,15 +295,13 @@ def reset_chat():
 @st.cache_data
 def map_file_to_source(thefile):
     mapfilename = st.session_state.mapfile_name
-    print("Checking "+mapfilename)
+    #print("Checking "+mapfilename)
     if pathlib.Path(mapfilename).exists():
-        print("Reading the sourcemap file " + mapfilename)
+        #print("Reading the sourcemap file " + mapfilename)
         with open(mapfilename, 'r', newline='', encoding='utf-8') as csvfile:
-            thefile = "OPENFILE"
             reader = csv.DictReader(csvfile)
             for row in reader:
-                thefile = "ROWCHECK"
-                thisfilename = os.path.basename(row['Filename'])
+                thisfilename = row['Filename'].split('\\')[-1] #os.path.basename(row['Filename'])
                 if thisfilename == thefile:
                     return row['URL']
     else:
