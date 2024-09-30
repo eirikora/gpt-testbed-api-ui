@@ -2,7 +2,8 @@ import os
 import base64
 import re
 import json
-
+import csv
+from pathlib import Path
 import streamlit as st
 import openai
 from openai import AssistantEventHandler
@@ -14,7 +15,7 @@ import streamlit_authenticator as stauth
 load_dotenv()
 
 assistant_icon = "🤖" 
-user_icon = "😍"      # st.image('A2logo_neg_small.png')
+user_icon = "🧑‍🔬"      # st.image('A2logo_neg_small.png')
 st.logo('a2bred_trans.png', link = None, icon_image = None)
 st.sidebar.markdown("*Sandkasse for utprøving av KI.*")
 
@@ -192,6 +193,7 @@ def create_file_link(file_name, file_id):
 
 
 def format_annotation(text):
+    citation_map = {}
     citations = []
     text_value = text.value
     for index, annotation in enumerate(text.annotations):
@@ -199,6 +201,10 @@ def format_annotation(text):
 
         if file_citation := getattr(annotation, "file_citation", None):
             cited_file = client.files.retrieve(file_citation.file_id)
+            if cited_file.filename in citation_map.keys():
+                citation_map[cited_file.filename] += f",[{index}]"
+            else:
+                citation_map[cited_file.filename] = f"[{index}]"
             if hasattr(file_citation, 'quote'):
                 citations.append(
                     f"[{index}] {file_citation.quote} from {cited_file.filename}"
@@ -209,6 +215,18 @@ def format_annotation(text):
                 file_path.file_id,
             )
             text_value = re.sub(r"\[(.*?)\]\s*\(\s*(.*?)\s*\)", link_tag, text_value)
+    for filename in citation_map.keys():
+        pretty_filename = filename
+        if "_" in filename:
+            pretty_filename = filename.split("_", 1)[1]  # Split on the first underscore and take the second part (Removes internal serial number)
+        if filename == map_file_to_source(filename):
+            citations.append(
+                f"{citation_map[filename]}: {pretty_filename}"
+            )
+        else:
+            citations.append(
+                    f"{citation_map[filename]}: [{pretty_filename}]({map_file_to_source(filename)})"
+            )
     text_value += "\n\n" + "\n".join(citations)
     return text_value
 
@@ -269,6 +287,18 @@ def reset_chat():
     st.session_state.in_progress = False
     st.session_state.just_started = True
 
+@st.cache_data
+def map_file_to_source(thefile):
+    mapfilename = st.session_state.mapfile_name
+    if Path(mapfilename).exists():
+        print("Reading the sourcemap file " + mapfilename)
+        with open(mapfilename, 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                thisfilename = os.path.basename(row['Filename'])
+                if thisfilename == thefile:
+                    return row['URL']
+    return thefile #Not found
 
 def load_chat_screen(assistant_id, assistant_title):
     if enabled_file_upload_message:
@@ -357,6 +387,8 @@ def main():
             on_change=reset_chat,  # Call the reset function on change
         )
         if selected_assistant:
+            st.session_state['mapfile_name'] = assistants_object[selected_assistant]["id"] + "_sourcemap.csv"
+            st.cache_data.clear()
             load_chat_screen(
                 assistants_object[selected_assistant]["id"],
                 assistants_object[selected_assistant]["title"],
