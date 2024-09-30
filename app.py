@@ -15,10 +15,9 @@ import sys
 
 load_dotenv()
 
-#p = pathlib.Path(__file__)
-#dir = p.resolve()
-#print(dir)
-#sys.path.append(dir.parent.parent)
+p = pathlib.Path(__file__)
+dir = p.resolve()
+sys.path.append(dir.parent.parent)
 
 assistant_icon = "🤖" 
 user_icon = "🧑‍🔬"      # st.image('A2logo_neg_small.png')
@@ -396,6 +395,8 @@ def main():
         )
         if selected_assistant:
             st.session_state['mapfile_name'] = assistants_object[selected_assistant]["id"] + "_sourcemap.csv"
+            st.markdown(st.session_state.mapfile_name)
+            st.markdown(dir)
             st.cache_data.clear()
             load_chat_screen(
                 assistants_object[selected_assistant]["id"],
