@@ -4,7 +4,6 @@ import re
 import json
 import csv
 import pathlib
-#from pathlib import Path
 import streamlit as st
 import openai
 from openai import AssistantEventHandler
@@ -13,17 +12,13 @@ from typing_extensions import override
 from dotenv import load_dotenv
 import streamlit_authenticator as stauth
 import sys
-#import path
 
 load_dotenv()
 
-p = pathlib.Path(__file__)
-#dir = p.absolute()
-#dir = path.Path(__file__)
-dir = p.resolve()
-#dir = os.path.abspath(__file__)
-print(dir)
-sys.path.append(dir.parent.parent)
+#p = pathlib.Path(__file__)
+#dir = p.resolve()
+#print(dir)
+#sys.path.append(dir.parent.parent)
 
 assistant_icon = "🤖" 
 user_icon = "🧑‍🔬"      # st.image('A2logo_neg_small.png')
