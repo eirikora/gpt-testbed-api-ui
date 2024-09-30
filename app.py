@@ -294,9 +294,11 @@ def reset_chat():
 
 @st.cache_data
 def map_file_to_source(thefile):
+    thefile = "Yalla"
     mapfilename = st.session_state.mapfile_name
+    st.markdown("Checking "+mapfilename)
     if pathlib.Path(mapfilename).exists():
-        print("Reading the sourcemap file " + mapfilename)
+        st.markdown("Reading the sourcemap file " + mapfilename)
         with open(mapfilename, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
