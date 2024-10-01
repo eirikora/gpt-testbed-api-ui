@@ -11,13 +11,8 @@ from tools import TOOL_MAP
 from typing_extensions import override
 from dotenv import load_dotenv
 import streamlit_authenticator as stauth
-import sys
 
 load_dotenv()
-
-p = pathlib.Path(__file__)
-dir = p.resolve()
-sys.path.append(dir.parent)
 
 assistant_icon = "🤖" 
 user_icon = "🧑‍🔬"      # st.image('A2logo_neg_small.png')
@@ -405,7 +400,6 @@ def main():
         load_chat_screen(single_agent_id, single_agent_title)
     else:
         st.error("No assistant configurations defined in environment variables.")
-
 
 if __name__ == "__main__":
     main()
