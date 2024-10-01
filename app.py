@@ -36,7 +36,7 @@ if openai_api_key:
     print ("Using OPENAI Key:" + openai_api_key[:7] + "..." + openai_api_key[-5:])
 instructions = os.environ.get("RUN_INSTRUCTIONS", "")
 enabled_file_upload_message = os.environ.get(
-    "ENABLED_FILE_UPLOAD_MESSAGE", "Upload a file"
+    "ENABLED_FILE_UPLOAD_MESSAGE", "Last opp et vedlegg her"
 )
 azure_openai_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
 azure_openai_key = os.environ.get("AZURE_OPENAI_KEY")
@@ -324,9 +324,15 @@ def load_chat_screen(assistant_id, assistant_title):
     else:
         uploaded_file = None
 
+    # Add welcome-image on left hand side
+    imagefile = "image_" + assistant_id + ".jpg"
+    if not pathlib.Path(imagefile).exists():
+        imagefile = "image_default.jpg"
+    st.sidebar.image(imagefile, caption="Velkommen!")
+
     st.title(assistant_title if assistant_title else "")
     user_msg = st.chat_input(
-        "Message", on_submit=disable_form, disabled=st.session_state.in_progress
+        "Din melding her...", on_submit=disable_form, disabled=st.session_state.in_progress
     )
     if st.session_state.just_started and not user_msg:
         user_msg = initial_hidden_message
@@ -353,13 +359,13 @@ def authenticate_password(some_password):
         return False
     return True
 
-some_password = st.text_input("Enter secret password:", type="password")
+some_password = st.text_input("Logg inn med hemmelig passord her:", type="password")
 
 if not authenticate_password(some_password):
-    st.error("Invalid Password. Access denied.")
+    st.error("Ugyldig/feil passord. Ingen aksess.")
     st.stop()
 else:
-    st.image("TOM_A-2.jpg", caption="Velkommen!")
+    st.success("Du er logget inn! Vennligst velg ønsket assistent i venstre meny!", icon=":material/thumb_up:")
 
 def main():
     # Check if multi-agent settings are defined
@@ -383,10 +389,10 @@ def main():
         assistants_json = json.loads(multi_agents)
         assistants_object = {f'{obj["title"]}': obj for obj in assistants_json}
         selected_assistant = st.sidebar.selectbox(
-            "Select an assistant profile?",
+            "Velg din KI-assistent:",
             list(assistants_object.keys()),
             index=None,
-            placeholder="Select an assistant profile...",
+            placeholder="Velg en assistent her...",
             on_change=reset_chat,  # Call the reset function on change
         )
         if selected_assistant:
