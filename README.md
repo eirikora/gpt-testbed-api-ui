@@ -1,5 +1,5 @@
 Note! This is a a modified copy of https://github.com/ryo-ma/gpt-assistants-api-ui , but I had to do a copy for a testbed because github only allows 1 fork per user.
-# gpt-assistants-api-ui
+# gpt-testbed-api-ui
 
 * 💬 OpenAI Assistants API chat UI
 * 🛠️ It works easily by setting the ASSISTANT IDs
