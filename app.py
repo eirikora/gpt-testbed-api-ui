@@ -5,6 +5,7 @@ import json
 import csv
 import pathlib
 import streamlit as st
+import streamlit.components.v1 as components 
 import openai
 from openai import AssistantEventHandler
 from tools import TOOL_MAP
@@ -23,6 +24,14 @@ st.sidebar.markdown("*Sandkasse for utprøving av KI.*")
 useAzure = False
 # Define the very first hidden message to the bot
 initial_hidden_message = "Hei!"
+
+# The following code parts are just to ensure that cursor focus stays in input field.
+# Initialize the counter in session state
+if 'counter' not in st.session_state:
+    st.session_state.counter = 0
+
+# Increment the counter each time the page is reloaded
+st.session_state.counter += 1
 
 def str_to_bool(str_input):
     if not isinstance(str_input, str):
@@ -353,6 +362,34 @@ def load_chat_screen(assistant_id, assistant_title):
         st.rerun()
 
     render_chat()
+
+    # Reset focus on input field
+    components.html(
+        f"""
+            <script>
+                function focusTextInput() {{
+                    var textarea = window.parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+                    if (textarea && !textarea.disabled) {{
+                        textarea.focus();
+                    }}
+                }}
+
+                function reEnableAndFocusTextInput() {{
+                    var textarea = window.parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+                    if (textarea) {{
+                        setTimeout(function() {{
+                            textarea.disabled = false;
+                            textarea.focus();
+                        }}, 100);  // Small delay to ensure the field is enabled before focusing
+                    }}
+                }}
+
+                // Call the function to re-enable and focus the text input field
+                reEnableAndFocusTextInput();
+            </script>
+        """,
+        height=0,
+    )
 
 def authenticate_password(some_password):
     if some_password != os.environ.get("USER_PASSWORD", None):
