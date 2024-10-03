@@ -366,26 +366,13 @@ def load_chat_screen(assistant_id, assistant_title):
     # Reset focus on input field
     components.html(
         f"""
+            <div>some hidden container</div>
+            <p>{st.session_state.counter}</p>
             <script>
-                function focusTextInput() {{
-                    var textarea = window.parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
-                    if (textarea && !textarea.disabled) {{
-                        textarea.focus();
-                    }}
+                var textarea = window.parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+                if (textarea) {{
+                    textarea.focus();
                 }}
-
-                function reEnableAndFocusTextInput() {{
-                    var textarea = window.parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
-                    if (textarea) {{
-                        setTimeout(function() {{
-                            textarea.disabled = false;
-                            textarea.focus();
-                        }}, 100);  // Small delay to ensure the field is enabled before focusing
-                    }}
-                }}
-
-                // Call the function to re-enable and focus the text input field
-                reEnableAndFocusTextInput();
             </script>
         """,
         height=0,
