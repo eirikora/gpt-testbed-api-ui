@@ -427,6 +427,8 @@ def main():
                 assistants_object[selected_assistant]["title"],
             )
     elif single_agent_id:
+        st.session_state['mapfile_name'] = single_agent_id + "_sourcemap.csv"
+        st.cache_data.clear()
         load_chat_screen(single_agent_id, single_agent_title)
     else:
         st.error("No assistant configurations defined in environment variables.")
