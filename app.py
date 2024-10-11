@@ -305,7 +305,10 @@ def map_file_to_source(thefile):
         with open(mapfilename, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                thisfilename = row['Filename'].split('\\')[-1] #os.path.basename(row['Filename'])
+                if '\\' in row['Filename']:
+                    thisfilename = row['Filename'].split('\\')[-1] #os.path.basename(row['Filename'])
+                else:
+                    thisfilename = row['Filename']
                 if thisfilename == thefile:
                     return row['URL']
     else:
