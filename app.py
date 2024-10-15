@@ -395,6 +395,17 @@ else:
     st.success("Du er logget inn! Vennligst velg ønsket assistent i venstre meny!", icon=":material/thumb_up:")
 
 def main():
+    # Retrieve the assistant ID from the URL parameter if provided
+    # You can read query params using key notation
+    assistant_id_from_url = None
+    try:
+        assistant_id_from_url = st.query_params["assistant"]
+        print(f"Assistant {assistant_id_from_url} indicated in URL.")
+    except Exception as e:
+        print("Assistant was not defined in URL.")
+    # query_params = st_script_run_context.get_script_run_ctx().query_params
+    # assistant_id_from_url = query_params.get("assistant", [None])[0]  # Using [0] to get the first element
+
     # Check if multi-agent settings are defined
     multi_agents = os.environ.get("OPENAI_ASSISTANTS", None)
     single_agent_id = os.environ.get("ASSISTANT_ID", None)
@@ -412,7 +423,24 @@ def main():
         else:
             authenticator.logout(location="sidebar")
 
-    if multi_agents:
+    # Determine if an assistant ID is pre-selected by URL parameter
+    if assistant_id_from_url:
+        if multi_agents:
+            assistants_json = json.loads(multi_agents)
+            assistants_object = {f'{obj["title"]}': obj for obj in assistants_json}
+            for title, assistant in assistants_object.items():
+                if assistant["id"] == assistant_id_from_url:
+                    # selected_assistant = assistant_id_from_url
+                    single_agent_id = assistant_id_from_url
+                    single_agent_title = title
+                    print(f"Går for URL-valgt agent {single_agent_title}({single_agent_id})!")
+                    break
+
+    if single_agent_id:
+        st.session_state['mapfile_name'] = single_agent_id + "_sourcemap.csv"
+        st.cache_data.clear()
+        load_chat_screen(single_agent_id, single_agent_title)
+    elif multi_agents:
         assistants_json = json.loads(multi_agents)
         assistants_object = {f'{obj["title"]}': obj for obj in assistants_json}
         selected_assistant = st.sidebar.selectbox(
@@ -429,10 +457,6 @@ def main():
                 assistants_object[selected_assistant]["id"],
                 assistants_object[selected_assistant]["title"],
             )
-    elif single_agent_id:
-        st.session_state['mapfile_name'] = single_agent_id + "_sourcemap.csv"
-        st.cache_data.clear()
-        load_chat_screen(single_agent_id, single_agent_title)
     else:
         st.error("No assistant configurations defined in environment variables.")
 
