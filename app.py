@@ -12,6 +12,7 @@ from tools import TOOL_MAP
 from typing_extensions import override
 from dotenv import load_dotenv
 import streamlit_authenticator as stauth
+import urllib.parse
 
 load_dotenv()
 
@@ -228,6 +229,9 @@ def format_annotation(text):
         pretty_filename = filename
         if "_" in filename:
             pretty_filename = filename.split("_", 1)[1]  # Split on the first underscore and take the second part (Removes internal serial number)
+            pretty_filename = urllib.parse.unquote(pretty_filename, encoding='utf-8')
+            if pretty_filename.endswith(".txt"):
+                pretty_filename = pretty_filename[:-4]  # Remove the last 4 characters ('.txt')
         if filename == map_file_to_source(filename):
             citations.append(
                 f"{citation_map[filename]}: {pretty_filename}"
@@ -302,7 +306,7 @@ def map_file_to_source(thefile):
     #print("Checking "+mapfilename)
     if pathlib.Path(mapfilename).exists():
         #print("Reading the sourcemap file " + mapfilename)
-        with open(mapfilename, 'r', newline='', encoding='utf-8') as csvfile:
+        with open(mapfilename, 'r', newline='', encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 if '\\' in row['Filename']:
