@@ -68,7 +68,7 @@ def get_remote_ip() -> str:
     except Exception as e:
         return None
 
-    return repr(session_info.session_info) #session_info.request.remote_ip
+    return repr(session_info.request) #session_info.request.remote_ip
 
 # Load authentication configuration
 if authentication_required:
