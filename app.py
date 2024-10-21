@@ -62,13 +62,13 @@ def get_remote_ip() -> str:
         if ctx is None:
             return None
 
-        session_info = runtime.get_instance().get_client(ctx.session_id)
+        session_info = ctx.user_info #runtime.get_instance().get_client(ctx.session_id)
         if session_info is None:
             return None
     except Exception as e:
         return None
 
-    return repr(session_info.request) #session_info.request.remote_ip
+    return repr(session_info) #session_info.request.remote_ip
 
 # Load authentication configuration
 if authentication_required:
