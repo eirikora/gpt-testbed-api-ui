@@ -15,6 +15,7 @@ import streamlit_authenticator as stauth
 import urllib.parse
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+import socket
 
 load_dotenv()
 
@@ -53,6 +54,20 @@ enabled_file_upload_message = os.environ.get(
 azure_openai_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
 azure_openai_key = os.environ.get("AZURE_OPENAI_KEY")
 authentication_required = str_to_bool(os.environ.get("AUTHENTICATION_REQUIRED", False))
+
+def get_ip_address():
+    # Create a socket and connect it to a remote host
+    # The remote host can be any external site (e.g., Google's DNS server)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Doesn't matter if the target is unreachable, we're just after the IP
+        s.connect(("8.8.8.8", 80))
+        ip_address = s.getsockname()[0]
+    except Exception as e:
+        ip_address = "Unable to get IP address: " + str(e)
+    finally:
+        s.close()
+    return ip_address
 
 def get_remote_ip() -> str:
     """Get remote ip."""
@@ -364,7 +379,7 @@ def load_chat_screen(assistant_id, assistant_title):
         imagefile = "image_default.jpg"
     st.sidebar.image(imagefile, caption="Velkommen!")
 
-    st.markdown(f"The remote ip is {get_remote_ip()}")
+    st.markdown(f"The remote ip is {get_ip_address()}")
 
     st.title(assistant_title if assistant_title else "")
     user_msg = st.chat_input(
